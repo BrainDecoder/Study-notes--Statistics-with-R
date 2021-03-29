@@ -1,0 +1,153 @@
+GENERAL/BASIC
+> x <- c(5, 3.2, 7, 9) = assigns a function to a variable
+> sample (ex$height,1) = takes 1 random sample from height column in ex database, can take any number instead of 1
+> x <- 0:10 = creates a sequence of numbers from 0 to 10 with 1 unit interval
+> seq (0,10,length=1000) - produces 1000 segments in the 0-10 region
+> x <- rep(v,t) = creates a sequence (x) of repeated values (v) s specific number of times (t)
+> for (i in 1:100) { x[i] <- y } = for loop that assigns 100 y values to each cell in x sequence
+> mean(x$column, na.rm=TRUE) = ignores N/A values
+> mean(ex2$group == "HIGH") = computes the proportion/relative frequency of HIGH values in the GROUP column in ex2 database 
+
+> ls() = outputs a list of all objects saved so far
+> rm(x) = removes the object x
+> rm(list=ls()) = removes all objects at once
+> x = matrix(data=c(1,2,3,4), nrow = 2, ncol = 2) = creates a matrix. data, nrow, ncol can be omited 
+  , byrow=TRUE) - fills the matrix by r
+> A[1,3] = selects the element from row 1 column 3 in A matrix 
+> A[,2:4] = selects all elements from all rows and 2 to 4 columns
+> A[-1,3] = keeps all rows except 1
+> cor(x,y) = computes correlation between x and y sets
+> set.seed(123) = when applied every time before rnorm() it reproduces the exact same set of random numbers.
+> attach(x) = after plot(x$columnName,...) removes the need to use $ when mentioning the columnName
+
+
+VIZ
+> data.frame (table(x)) = creates a table view of x data frame
+> plot (table(x)) = creates a bar-plot
+> plot (x,y,xlab="this is the x-axis", ylab="this is the y-axis", main="Plot of X vs Y")
+> plot (x,den, type="l") = creates a plot on the x interval and den segment and connects the dots with lines
+> hist (x$height, col=2, breaks=15) = creates a histogram for x data frame for "height" column, col=2 is the same as col="red", break is the nr of bins the hist will be divided in 
+> pairs (x) = creates scatterplot matrix for every pair in the x dataset 
+> pairs (~ col1+col2+col3+col4+col5 , x) = pairs for specific columns 
+> identify (y-axis, x-axis) = inserted after plot function allows selecting manualy elements on the plot, after exit it identifies the values for all selected elements
+> boxplot (x$height) = creates a boxplot
+> pdf ("file name.pdf") = creates a pdf file in the main directory. Can be jpeg or other fomats.
+> dev.off() = after pdf and plot saves the plot to pdf
+> contour(x,y,z) = creates a contour plot
+> image (x,y,z) = creates a heatmap
+> persp (x,y,f ,theta =20, phi =30) = draws a 3D plot and moves it 20 degree horizontaly to right and 30 degree vertically up
+
+
+READ/EDIT/EXPORT
+> ex <- read.csv("ex1.csv") = opens ex1.csv from the main directory
+> read.table ("fileName.data", header = T, na.strings ="?") = reads a data file, makes first rows as headers, interprets ? as N/A
+> names(x) = prints column titles 
+> dim(A) = outputs the nr of rows and columns of matrix A 
+> fix(file) = opens another window view of the file 
+> x=na.omit(x) = removes rows with N/A
+> column = as.factor(column) = converts quanTitative varaible into quaLitative
+> write.table() = exports into data file
+
+_____
+
+
+DESCRIPTIVE STATISTICS
+> table (x) = counts the frequency of values
+> round (x$columnname,0) = rounds the values in columnname to integer, should be assigned to another table 
+> sum (x) = sums the values
+> cumsum (x) = calculates cumulative sum of values
+> mean (x) = calculates the average
+> median (x) = calculates the median
+> length (x) = counts the elements in X 
+> abs (x-5) = computes the absolute number for each element in X range minus 5
+> summary (x) = calculates min, max, 1st and 3rd Quartiles, median, mean/average
+> sort (x) = sorts the list by increasing values; sort(x,TRUE) by decreasing 
+
+> cumulative relative frequencies = cumsum (x/sum(x))
+> deviation for each element = x - mean (x)
+> variance = sum ((x-mean(x))^2)/(length(x)-1)
+> standard deviation = sqrt (sum ((x-mean(x))^2)/(length(x)-1)) or sqrt (variance)
+
+
+PROBABILITY / RANDOM VARIABLES
+> P(X) or probability to get randomly a subject with a specific characteristic = total count of subjects with the specific characteristic / total population
+> mean (abs(X-170) <= 10) = the probability to get a value between 160 and 180 in the X range
+> Var(X) or variance of a random variable = sum((x-E(X))^2 * P(x))	
+> sd (X) or standard deviation of a random variable = sqrt (Var(X))
+> var (x) = calc. the variance 
+> sd (x) = calc. the standard deviation 
+
+> X~Binomial(n,p) = binomial random variable distribution, where n is number of repeats/trials/pax and p is probability of success in each trial (ex. 1/2 for coin, 1/6 for die side) or % of pax to fit a category
+> E(X) = n*p is expectation of Binomial random variable 
+> Var(X) = n*p*(1-p) is variance of the Binomial random variable 
+> dbinom (c(x1, x2, ...), n, p) = calc. the probability of various possible values of Binomial random variable 
+> pbinom (c(x1, x2, ...), n, p) = calc. the cumulative probability of Binomial
+> qbinom 
+> rbinom (sample size, n, p) = produces a random sample from the Binomial distribution
+
+> X~Poisson(lambda) = means random variable X has a Poisson distribution with expectation E(X)=lambda
+> E(X)=Var(X)=lambda=n*p
+> dpois (c(x1, x2, ...), E(X)) = computes probability according to Poisson distribution 
+> ppois (c(x1, x2, ...), E(X)) = computes the cumulative probability according to Poisson distribution 
+> qpois
+> rpois (n, lambda)
+
+> E(X) = (integration) SS(x*f(x))d*x - expectation of a Continuous random variable 
+> Var(X) = SS((x-E(X))^2*f(x)d*x - variance of a Continuous random variable 
+
+> E(X) = (a+b)/2 - expectation of a Uniform random variable 
+> Var(X) = ((b-a)^2)/12 - variance of a Uniform random variable 
+> dunif (0:10 or 4.56, 3, 7) = density function at given values (uniform random variable), 3,7 is the interval
+> punif (4.89,3,7) = comp. cumulative probability of the uniform distribution (everything to the left of 4.89) = is equal with (4.89-3)/(7-3)
+> qunif (%, min, max)
+
+> E(X) = sd(X) = 1/lambda - expectation of Exponential distribution
+> Var(X) = 1/lambda^2 - variance of Exponential distribution
+> dexp () - computes the density of Exponential distribution
+> pexp (point, rate) - cumulative probability of Exponential distribution
+> qexp
+> rexp (sample size, lambda) = produces a random sample from the Exponential distribution
+
+> dnorm (point, E(X), sd(X))- computes the density of Normal distribution
+> pnorm (point, E(X), sd(X)) - cumulative probability of Normal distribution at a specific point 	
+> qnorm (%percentile, E(X), sd(X)) - computes Normal distribution percentile
+> rnorm (n, mu, sig), where n is the sample size, mu is the expected mean of the sample, sig is the expected sd of the sample 
+> z-score = (original value - E(X))/sd(X)
+> for Normal approximation W/O continuity of Binomial use E(X) and sd(X) from Binomial in the Normal formulas
+> for Normal approximation with continuity add 0.5 to the point/points
+
+
+SAMPLING DISTRIBUTION
+
+// probability (mean of abs) of the sample average (X.bar) falling within 1 unit (<=1) of the population mean
+> mean (abs(X.bar - mean(pop.1$height)) <= 1)
+
+// Simulation: expectation of the sampling distribution for the sample average of the variable
+> X.bar <- rep (0, 10^5) // future sequence/statistic with 0 values to be replaced
+> for (i in 1:10^5) {  //same size as X.bar
++     X.samp <- sample(pop.2$bmi,150)  //extracts random samples from population or creates them with r...() formulas
++     X.bar[i] <- mean(X.samp)  //a statistic formula (T=X_bar/S/sqrt(n) for example) executed on the random sample and assigned to a cell
++ }
+> mean(X.bar) - is the E(Xbar)
+> sd(X.bar)
+
+// central region that contains 80%
+> quantile(X.bar, c(0.1, 0.9)), where X.bar can be any T statistic formula calculated in the simulation
+
+// normal approximation of the central region that contains 80% of the sampling distribution of the sample average 
+> qnorm(c(0.1,0.9), E(Xbar), sd(Xbar))
+// the 90th percentile for the average score
+> qnorm(0.9, E(Xbar), sd(Xbar))
+// The 90th percentile for the total score for the XX observations
+> XX*qnorm(0.9, E(Xbar), sd(Xbar))
+// The probability that the total of the XX observations is less than 200 (for example)
+> pnorm (200/XX, E(X), sd(X))
+
+//structure of the central region of 90% of the normal distribution
+> E(X) +/- qnorm(0.95) * sd(Xbar) => c = qnorm(0.95)*sd(Xbar)	
+
+/// CLT
+> E(Xbar) = E(X) - the expectation of the sample mean is equal to the theoretical expectation of its components 
+> Var(Xbar) = Var(X)/n - the variance of the sample average, n is size of the sample 
+> sd(Xbar) = sqrt(Var(Xbar)) = sd(X)/sqrt(n)
+> Z = (Xbar - E(Xbar)) / sqrt(Var(Xbar)) = (sqrt(n)(Xbar - E(X))) / sqrt(Var(X)) - the standardized sample average
