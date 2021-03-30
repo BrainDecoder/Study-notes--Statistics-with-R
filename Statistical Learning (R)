@@ -1,0 +1,236 @@
+STATISTICAL LEARNING
+
+
+LINEAR REAGRESSION
+
+General
+> library (MASS) - useful libraries
+> install.packages("ISLR") - instalation if required
+> library (ISLR)
+> attach (aTable) - all following variables will be taken from aTable table
+> library (car) - for the VIF function
+> functionName = function() {
+command 1
+command 2
+print ("Something to print")
+} - creates a custom function that can be used later
+
+Simple LR
+> x=lm(col1~col2) - fits a simple LR with col1 as Y and col2 as X
+> names(x) - also shows hidden pieces of info in x=lm()
+> x$hiddenPiece - to see details of the hidden piece 
+> confint(x) - calc confidence intervals
+> predict(x, data.frame(col2=(c(X1, X2, X3))), interval="confidence") - predicts Ys results for Xs inputs and their confidence intervals (related to reducible error). col2 is the real name of the column or vector used as X value to calculate Y value! The interval is based on the avg of all results and is for the predicted Y. 
+> ---,interval="prediction") - --- and their prediction intervals (related to irreducible error), usually larger because incorporates the reducible error as well. The interval is based on the specific X and is for the real Y. 
+> which.max(x) - identifies the index of the largest element of a vector 
+
+Viz
+> plot(colForXaxis, colForYaxis) - draws a plot
+> plot(colForYaxis~colForXaxis) - same plot
+> ---, pch="+") - uses + to draw the points on the plot, any simbol can be used, as well as its number.
+> abline(x, lwd=3, col="red") - adds the LR line to the plot with width of 3 and red color. abline can be used for any line by mentioning abline(intercept,slope)
+> par(mfrow=c(2,2)) - divides the plot screen into 4 parts
+> plot(m(col1~col2)) - builds 4 diagnostic plots (all 4 on one screen if used after par)
+> plot(predict (x), residuals (x)) - builds a risidual plot that proves non-linearity
+> plot(predict (x), rstudent (x)) - builds a standardized risidual plot. Can be used also to plot risiduals agains fitted values (when multiple LR)
+> plot(hatvalues (x)) - hatvalues computes leverage statistics for any number of predictors 
+
+Multiple LR
+> x=lm(Y~X1+X2+X3)- for 3 predictors
+> x=lm(Y~.) - for all predictors
+> x=lm(Y~.-X5) - for all predictors except X5 
+> summary(x)$r.sq - from the summary results gives specifically the R-squared one
+> summary(x)$sigma - from the summary results gives specifically the RSE one
+> vif(x) - computes variance inflation factors
+> lm(Y~X1+X2+X1:X2) - adding an interaction term between 2  columns; col*col2 replaces col1 + col2 + col1:col2
+> xx=lm(Y~X+I(X^2)) - non-linear predictor X 
+> anova (x, xx) - anova compares the 2 models, null hypothesis is that the models fit the data equally, p-value close to 0 -> sets differ
+
+Qualitative predictors
+> contrasts(col1) - returns the coding that R uses for the dummy variables of the qualitative predictor
+
+
+LOGISIC REGRESSION
+
+> cor(dataset) = computes the correlation of x and y if these are vectors. If x and y are matrices then the correlation s between the columns of x and the columns of y are computed.
+> glm.fit = glm (y ∼ col1 + col2, data=dataFrameName, family=binomial) - binomial tells R that it's a logistic regression. summary should be used afterwards to see the results. 
+> glm.probs = predict (glm.fit, type = "response") - type="response" tells R to output probabilities of the form P(Y = 1|X)
+> glm.probs[1:10] - runs predict for 10 predictors mentioned
+> glm.pred= rep("Down", 1250) - creates a vector of 1250 Down elements
+> glm.pred [glm.probs>.5]="Up" - creates a condition for the prediction, which Down elements to be replaced with Up
+> table(glm.pred, Y) - Y is result or predicted, determines how many observations were correctly classified 
+> mean(glm.pred == Y) - computes the fraction of correct predictions
+
+LDA - linear discriminant analysis
+
+> lda.fit = lda (Y ∼ col1+col2, data = dataset, subset = trainDataSet) - no family option for lda. 
+> lda.pred = predict (lda.fit, testDataSet) - returns 3 elements: class (contains LDA’s predictions), posterior (a matrix whose kth column contains the posterior probability that the corresponding observation belongs to the kth class), x (contains the linear discriminants).
+> lda.class = lda.pred$class
+> table (lda.class, testDataSet) - table of correct and wrong predictions 
+> mean (lda.class == testDataSet) - % of correct predictions
+> sum(lda.pred$posterior[,1] >=.5) - applying a 50% threshold to the posterior probabilities allows us to recreate the predictions contained in lda.pred$class
+> sum(lda.pred$posterior[,1]<.5)
+
+QDA - quadratic discriminant analysis
+> qda.fit = qda (Y ∼ col1+col2, data=dataFrame, subset = trainDataSet) - doesn't output the coefficients
+> predict() - same as LDA
+
+
+kNN - k NEAREST NEIGHBOUR
+
+General
+> str(dataFrame) - shows the columns names, data type, several first values
+> dataFrame.subset = dataFrame[c('col1', 'col2', 'col3')] - creates a subset with the selected columns/features/attributes
+> nrow(dataFrame)
+
+Normalization
+> normalize = function (x) {
++	return ((x - min(x)) / (max(x) - min(x)))
++	} - converts to 0 to 1 values
+> dataFrame.subset.n = as.data.frame(lapply(dataFrame.subset[,colFrom:colTo], normalize)) - lapply applies the function on the dataset, but since it returns lists, it is converted back to data.frame later
+
+Training/Test sets
+> dat.d = sample(1:nrow(dataFrame.subset.n), size = nrow(dataFrame.subset.n) * 0.7, replace = FALSE) - random selection of 70% data
+> train.gc = dataFrame.subset[dat.d,] # 70% training data
+> test.gc = dataFrame.subset[-dat.d,] # remaining 30% test data
+> train.gc_labels = dataFrame.subset[dat.d,1] - creating seperate dataframes for target/result feature
+> test.gc_labels = dataFrame.subset[-dat.d,1]
+
+Training a model
+> library(class) - calls class package required for kNN
+> knn.26 = knn(train = train.gc, test = test.gc, cl = train.gc_labels, k=26) - training with k=26
+
+Testing accuracy v1
+> acc.26 = 100*sum(test.gc_labels == knn.26)/NROW(test.gc_labels) - testing accuracy for k=26
+> table (knn.26 ,test.gc_labels) - checks prediction against actual value in tabular form; intersection of similar values shows the nr of correct predictions
+
+Testing accuracy v2
+> Install.packages(caret) - if required
+> library(caret)
+> confusionMatrix(knn.26 ,test.gc_labels) - gives lots of info about the results, like accuracy, conf. interval, p-value, etc
+
+Improvement of the model
+> i=1 #declaration to initiate for loop
+> k.optm=1 #declaration to initiate for loop
+> for (i in 1:28){ 
++    knn.mod <- knn(train=train.gc, test=test.gc, cl=train.gc_labels, k=i)
++    k.optm[i] <- 100 * sum(test.gc_labels == knn.mod)/NROW(test.gc_labels)
++    k=i  
++    cat(k,'=',k.optm[i],'\n') #to print % accuracy 
++} - runs a loop of trainings and testings
+> plot (k.optm, type="b", xlab="K-Value", ylab="Accuracy level") - to plot % accuracy wrt to k-value
+
+
+DECISION TREES
+
+Classification Trees
+
+General 
+> install.packages("tree") - if needed
+> library (tree) - call the package
+> varName = factor(ifelse(condition, if true, if false)) - factor keeps the responses as 2 separate categories, which is needed for the tree 
+> newDataFrame = data.frame (oldDataFrame, column) - adds column to the oldDataFrame
+> dataFrame <- subset (dataFrame, select = -c(col1, col2)) - removes col1 and col2 from the dataFrame
+
+Fitting classification tree
+> tree.dataFrame = tree(Y∼columns, dataFrame) - similar to lm() function, then summary should be applied to see results
+> plot(tree.dataFrame)
+> text(tree.dataFrame, pretty=0) - adds text to the tree picture
+> tree.dataFrame - prints details of each branch of the tree
+
+Testing accuracy
+> set.seed(nr)
+> train = sample(1:nrow(dataFrame), 200)
+> dataFrame.test = dataFrame[-train,]
+> response.test = response [-train]
+> tree.dataFrame = tree (response∼.-Sales, dataFrame, subset = train)
+> tree.pred = predict (tree.dataFrame, dataFrame.test, type = "class") - class argument instructs R to return the actual class prediction 
+> table (tree.pred, response.test)
+
+Improving results
+> set.seed (nr)
+> cv.dataFrame = cv.tree(tree.dataFrame, FUN=prune.misclass) - cv.tree() performs cross-validation in order to determine the optimal level of tree complexity; FUN=prune.misclass indicates that we want the classification error rate to guide the cross-validation and pruning process, rather than the default for the cv.tree() function, which is deviance
+> names(cv.dataFrame)
+> cv.dataFrame
+
+Ploting error rate
+> par(mfrow = c(1,2))
+> plot(cv.dataFrame$size, cv.dataFrame$dev, type="b")
+> plot(cv.dataFrame$k, cv.dataFrame$dev, type="b")
+> prune.dataFrame = prune.misclass (tree.dataFrame, best=9) - prune the tree to obtain the 9 node tree, which was identified in cv.dataFrame as the $size with lowest $dev
+> plot(prune.dataFrame)
+> text(prune.dataFrame, pretty=0)
+
+Testing pruned tree
+> tree.pred = predict(prune.dataFrame, dataFrame.test, type="class")
+> table(tree.pred, response.test)
+
+Regression Trees
+
+> set.seed (nr) - Fitting Regression tree
+> train = sample (1:nrow(dataSet), nrow(dataSet)/2)
+> tree.dataSet = tree(Y∼.,dataSet, subset=train)
+> summary (tree.dataSet)
+> plot(tree.dataSet)
+> text(tree.dataSet ,pretty=0)
+
+> cv.dataSet =cv.tree(tree.dataSet) - improving results 
+> plot(cv.dataSet$size, cv.dataSet$dev, type=’b’)
+
+> prune.dataSet = prune.tree (tree.dataSet, best=5) - pruning 
+> plot(prune.dataSet)
+> text(prune.dataSet, pretty=0)
+
+> yhat = predict (tree.dataSet, newdata = dataSet[-train,]) - testing and predicting
+> dataSet.test = dataSet [-train,"medv"]
+> plot (yhat, dataSet.test)
+> abline (0,1)
+> mean ((yhat-dataSet.test)^2)- MSE associated with the bagged regression tree
+
+Bagging and Random Forests
+
+> library (randomForest)
+> set.seed (nr)
+> bag.dataSet = randomForest (Y∼.,data=dataSet, subset=train, mtry=13, importance=TRUE) - mtry indicates how many predictors should be used - in this case 13 is max > we do bagging, if mtry is smaller > we grow random forest; ntree= changes the number of trees grown by randomForest(); 
+> bag.dataSet
+
+> yhat.bag = predict (bag.dataSet, newdata=dataSet[-train,]) - testing the bagged model
+> plot(yhat.bag, dataSet.test)
+> abline (0,1)
+> mean((yhat.bag-dataSet.test)^2) - MSE associated with the bagged regression tree
+> importance (rf.dataSet) - shows the importance of each variable for a Random Forest model
+> varImpPlot (rf.dataSet) - plots the importance results 
+
+Boosting
+
+> library (gbm)
+> set.seed (nr)
+> boost.dataSet = gbm(Y∼., data=dataSet[train,], distribution="gaussian", n.trees=5000, interaction.depth=44, shrinkage=0.2, verbose=F) - gaussian for regression problems, bernoulli for classification problems, 5000 for 5000 trees, 4 is the depth of each tree; shrinkage and verbose are used if shrinkage parameter is customized, by default it's 0.001. 
+> summary (boost.dataSet) - produces a relative influence plot 
+
+Partial dependence plots
+> par(mfrow = c(1,2))
+> plot(boost.dataSet, i="rm") - rm and lstat are the most important variables
+> plot(boost.dataSet, i="lstat") - these illustrate the marginal effect of the selected variables on the response after integrating out the other variables
+
+> yhat.boost = predict (boost.dataSet, newdata=dataSet[-train,], n.trees=5000)
+> mean((yhat.boost-dataSet.test)^2) - lower the MSE eman is - the better
+
+
+CLUSTERING
+
+K-Means
+> set.seed()
+> km.varName = kmeans (dataFrame, 2, nstart = 20) - 2 is the number of clusters, nstart is the number of random assignments, higher it is, smaller becomes km.varName$tot.withinss (total within cluster sum of squares)
+> km.varName$withinss - individual within cluster sum of squares
+
+Hierarchical clustering (Euclidean)
+> hc.complete = hclust(dist(dataFrame), method = "complete") - complete can be replaced with "single" or "average" to change the linkage
+> plot(hc.complete, main = "Name of graph", xlab = "", sub = "", cex=.9) - plots the dendrogram
+> cutree(hc.complete, 2) - determines the cluster labels for each observation associated with a given cut of the dendrogram, 2 is for two clusters
+> xsc = scale(x) - scale scales the variables before hier. clus.
+> plot(hclust(dist(xsc), method... - plots the scaled variables
+
+Hierarchical clustering (correlation-based distance)
+> dd = as.dist(1- cor(t(x))) - as.dist() converts an arbitrary square symmetric matrix into a form that the hclust() function recognizes as a distance matrix, this makes sense only with at least 3 features
+> plot(hclust (dd, method = "complete"), main = "Name of graph", xlab="", sub ="")
