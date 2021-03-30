@@ -1,3 +1,5 @@
+STATISTICAL INFERENCE
+
 MSE
 MSE = E[(theta_bar-theta)^2], where MSE is mean square error, E is expectation, theta_bar is estimator of the sample (calculated in simulation), theta is the parameter of the population
 Bias = E(theta_bar)-theta, the bias of an estimator
