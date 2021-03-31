@@ -1,0 +1,239 @@
+#BASICS
+
+# Check the Python Version
+import sys
+sys.version
+# Type of 12
+type(12)
+# System settings about float type
+sys.float_info
+# Casting 1.1 to integer will result in loss of information
+int(1.1)
+# Returns an integer, specifically 2
+12//5
+
+#DATA STRUCTURES
+
+# Print the last element in the string
+Name = 'Michael Jackson'
+print(Name[-1])
+# Find the length of string
+len("Michael Jackson")
+# Get every second element. The elments on index 0, 2, 4...
+Name[::2]
+# Concatenate two strings
+Statement = Name + "is the best"
+# Tab escape sequence
+print(" Michael Jackson \t is the best" )
+# r will tell python that string will be display as raw string
+print(r" Michael Jackson \ is the best" )
+# Convert all the characters in string to upper case
+Name = Name.upper()
+Name = Name.replace('a', 'e')
+# Find the substring in the string.
+Name.find('Jack')
+
+# Concatenate two tuples
+tuple1 = ("disco",10,1.2 )
+tuple2 = tuple1 + ("hard rock", 10)
+# Slice from index 3 to index 4
+tuple2[3:5]
+# Get the length of tuple
+len(tuple2)
+# Sort the tuple by creating a new one
+tuple1Sorted = sorted(tuple1)
+# Create a nest tuple
+NestedT =(1, 2, ("pop", "rock") ,(3,4),("disco",(1,2)))
+# Print the first element in the second nested tuples
+NestedT[2][1][0]
+# Find the first index of "smt"
+tuple1.index("smt")
+
+# Create a list
+L = ["Michael Jackson", 10.1, 1982, [1, 2], ("A", 1)]
+# Use extend to add elements to list, each separetely = same as +
+L.extend(['pop', 10])
+# Use append to add elements to list, all as a nested list
+L.append(['pop', 10])
+# Change the element based on the index
+L[0] = 'hard rock'
+# Delete the element based on the index
+del(L[0])
+# Split the string, default is by space, a list is created
+'hard rock'.split()
+# Split the string by comma
+'A,B,C,D'.split(',')
+# Copy the reference, pointing to the same list
+A = L
+# Clone the values, creating a copy
+A = L[:]
+# Sort the list by creating a new one
+sortedList = sorted(L)
+# Sort the list without creating a new one
+L.sort() 
+
+# Create a set
+set1 = {"pop", "rock", "soul", "hard rock", "rock", "R&B", "rock", "disco"}
+# Create a set from list
+set2 = set([ "AC/DC", "Back in Black", "The Dark Side", "rock", "disco"])
+# Convert list to set, removes all dublicates
+L_set = set(L)
+# Add element to set
+set1.add("NSYNC")
+# Remove the element from set
+set1.remove("NSYNC")
+# Verify if the element is in the set
+"AC/DC" in set1
+# Find the intersections, or inner joint
+intersection = set1 & set2
+set1.intersection(set2)
+# Find the difference in set1 but not set2, or left joint
+set1.difference(set2)
+# Find the union of two sets, or outerjoin
+set1.union(set2)
+# Check if superset, fully included in set2
+set(set1).issuperset(set2)
+
+# Create the dictionary
+Dict = {"key1": 1, "key2": "2", "key3": [3, 3, 3], "key4": (4, 4, 4), ('key5'): 5, (0, 1): 6}
+# Access to the value by the key
+Dict["key1"]
+# Get all the keys in dictionary
+dict.keys() 
+# Get all the values in dictionary
+dict.values() 
+# Append value with key into dictionary
+dict['Graduation'] = '2007'
+# Delete entries by key
+del(dict['Thriller'])
+# Verify the key is in the dictionary
+'key21' in dict
+
+#PROGRAMMING FUNDAMENTALS AND OBJECTS
+
+# Elif statment example
+age = 18
+if age > 18:
+    print("you can enter" )
+elif age == 18:
+    print("go see Pink Floyd")
+else:
+    print("go see Meat Loaf" )
+print("move on")
+
+#range(3) == [0,1,2]
+# For loop & range example
+dates = [1982,1980,1973]
+N = len(dates)
+for i in range(N):
+    print(dates[i])
+# Loop through the list and iterate on both index and element value
+squares=['red', 'yellow', 'green', 'purple', 'blue']
+for i, square in enumerate(squares): #enumerate because 2 values analyzed
+    print(i, square)
+# While Loop Example
+dates = [1982, 1980, 1973, 2000]
+i = 0
+year = 0
+while(year != 1973): #stops after printing 1973
+    year = dates[i]
+    i = i + 1
+    print(year)
+print("It took ", i ,"repetitions to get out of loop.")
+
+# Global variables
+def printer(artist):
+    global internal_var 
+    internal_var= "Whitney Houston"
+    print(artist,"is an artist")
+    
+# Import the library to draw objects
+import matplotlib.pyplot as plt
+#%matplotlib inline 
+# Create a class Circle
+class Circle (object): #key word, class name, parent class
+    # Constructor
+    def __init__(self, radius=3, color='blue'): 
+        self.radius = radius
+        self.color = color 
+    # Method
+    def add_radius(self, r):
+        self.radius = self.radius + r
+        return(self.radius)
+    # Method
+    def drawCircle(self):
+        plt.gca().add_patch(plt.Circle((0, 0), radius=self.radius, fc=self.color))
+        plt.axis('scaled')
+        plt.show() 
+# Create an object RedCircle which is an instance of the class
+RedCircle = Circle (10, 'red')
+# Find out the methods can be used on the object RedCircle
+dir(RedCircle)
+# Print the object attribute color
+RedCircle.color
+# Set the object attribute radius
+RedCircle.radius = 1
+# Call the method drawCircle
+RedCircle.drawCircle()
+
+#DATA MANAGEMENT
+
+# Read a file
+source = "/path/file_name.txt"
+file = open(source, "r") #r for read mode, w for writing mode
+# Print the path of file
+file.name
+# Read the file
+FileContent = file.read()
+FileContent #prints all in one line, /n means that there is a new line
+print (FileContent) #prints each line in a new line
+# Close file after finish
+file.close()
+# Open file using with
+with open(source, "r") as file:
+    FileContent = file.read()
+    print(FileContent) #after that the file is closed automaticaly
+# Read first four characters
+with open(source, "r") as file:
+    print(file.read(4))
+# Read one line
+with open(source, "r") as file:
+    print("first line: " + file.readline())
+# Iterate through the lines
+with open(source,"r") as file:
+        i = 0;
+        for line in file:
+            print("Iteration", str(i), ": ", line)
+            i = i + 1;
+
+# Write line to file
+with open(source, 'w') as writefile:
+    writefile.write("This is line A")
+# Apending a new line to text file with 'a'
+with open(source, 'a') as writefile:
+    writefile.write("This is line C\n")
+# Write strings from a list to text file
+with open(source, 'w') as writefile:
+    for line in L: #L is a list of text lines
+        writefile.write(line)
+# Copy file to another
+with open(source,'r') as readfile:
+    with open(source,'w') as writefile:
+          for line in readfile:
+                writefile.write(line)
+
+# Import required library
+import pandas as pd
+# Read data from different file
+df = pd.read_csv(source)
+df = pd.read_excel(source)
+# Print first 5 rows of the dataframe
+df.head(5)
+# Access specific columns and assign them to x
+x = df[['Length','Genre']]
+# Access the value on the first row and the third column
+df.iloc[0,2]
+df.loc[0, 'Artist']
+# Slicing the dataframe
+df.iloc[0:2, 0:3]
+df.loc[0:2, 'Artist':'Released']
