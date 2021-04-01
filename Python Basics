@@ -229,11 +229,117 @@ df = pd.read_csv(source)
 df = pd.read_excel(source)
 # Print first 5 rows of the dataframe
 df.head(5)
+# Create dataframe from dictionary, a and b become column names
+df=pd.DataFrame({'a':[11,21,31],'b':[21,22,23]})
 # Access specific columns and assign them to x
 x = df[['Length','Genre']]
 # Access the value on the first row and the third column
 df.iloc[0,2]
 df.loc[0, 'Artist']
 # Slicing the dataframe
-df.iloc[0:2, 0:3]
-df.loc[0:2, 'Artist':'Released']
+df.iloc[0:2, 0:3] #first 2 rows and first 3 columns
+df.loc[0:2, 'Artist':'Released'] #first 2 rows and all columns between those 2
+# Identify unique elements in column 'a'
+df['a'].unique()
+# Filtering, custom selection
+df1=df[df['Released']>=1980] #selects all rows where Release values are >=1980
+# Save the new dataframe
+df1.to_csv('new_df.csv')
+
+#APIs
+
+# Libraries that allow to send HTTP/1.1 requests
+import requests
+import os 
+from PIL import Image
+from IPython.display import IFrame
+# Drive data from server
+url='https://www.ibm.com/'
+r=requests.get(url)
+# View the status code (for ex. 200 for OK or 404 for NOT FOUND)
+r.status_code
+# View the request headers
+print(r.request.headers)
+# View the request body
+print("request body:", r.request.body)
+# View the HTTP response header
+header=r.headers
+print(r.headers)
+# Obtain the date the request was sent
+header['date']
+# Indicate the type of data
+header['Content-Type']
+# Check the encoding
+r.encoding
+# Review the first 100 characters (possible because Content-Type is text/html)
+r.text[0:100]
+
+# Load other types of data for non-text requests
+url='https://gitlab.com/.../images/IDSNlogo.png'
+r=requests.get(url)
+# We must save it using a file object. Specify the file path and name
+path=os.path.join(os.getcwd(),'image.png')
+# Save the file
+with open(path,'wb') as f:
+    f.write(r.content)
+# View the image
+Image.open(path)
+
+# NUMPY ARRAYS
+# 1D
+
+# Import the libraries
+import numpy as np 
+import matplotlib.pyplot as plt
+#%matplotlib inline  
+# Create numpy array
+c = np.array([20, 1, 2, 3, 4])
+# Assign the 5th element to 0
+c[4] = 0
+# Slicing
+d = c[1:4] # Select the elements with index 1 to 3
+# Use a list to select a specific index
+select = [0, 2, 3]
+d = c[select]
+# Get the size
+c.size
+# Get the number of dimensions
+c.ndim
+# Get the shape
+c.shape
+# Get the mean
+mean = c.mean()
+# Get the standard deviation
+standard_deviation = c.std()
+# Get the biggest/smallest value in the numpy array
+max_c = c.max()
+max_c = c.min()
+# Numpy Array Addition
+u = np.array([1, 0])
+v = np.array([0, 1])
+z = u + v
+# Add the constant to array
+u + 1
+# Numpy Array Multiplication
+z = 2 * u
+# Calculate the production of two numpy arrays
+z = u * v
+# The dot product = when raw elements are * with column elements and +
+z = np.dot(u, v)
+# The value of pi
+np.pi
+# Calculate the sin of each elements
+y = np.sin(x)
+# Makeup a numpy array within [-2, 2] and 5 elements
+np.linspace(-2, 2, num=5)
+
+# 2D
+a = [[11, 12, 13], [21, 22, 23], [31, 32, 33]]
+A = np.array(a)
+# Access the element on the second row and third column, 2 methods
+A[1, 2]
+A[1][2]
+# Access the elements on the first row and first and second columns
+A[0, 0:2]
+# Get the transposed of A
+A_trans = A.T
