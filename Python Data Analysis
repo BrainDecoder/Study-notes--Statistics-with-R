@@ -1,152 +1,72 @@
+#IMPORT/EXPORT
+
+# Import libraries
 import pandas as pd
 import numpy as np
-#import matplotlib as plt
-#from matplotlib import pyplot
-import matplotlib.pyplot as plt
-import seaborn as sns
-#pd.set_option('display.max_columns', 5) #limits the nr of columns displayed
-
-#
-#reading data frame, adding headers and replacing ? with NaN
-url = "imports-85.data"
-df = pd.read_csv(url, header = None, na_values='?')
-
-headers = ["symboling","normalized-losses","make","fuel-type","aspiration", "num-of-doors","body-style", "drive-wheels","engine-location","wheel-base","length","width","height","curb-weight","engine-type", "num-of-cylinders", "engine-size","fuel-system","bore","stroke","compression-ratio","horsepower", "peak-rpm","city-mpg","highway-mpg","price"]
+# Read the file
+path = "https://.../auto.csv"
+df = pd.read_csv(path, header=None)
+# Show the first 5 rows
+df.head(5)
+# Add headers
+headers = ["symboling","normalized-losses","...","make","fuel-type"]
 df.columns = headers
+# Save file
+df.to_csv("automobile.csv", index=False)
+# Learn the type of each attribute
+df.dtypes
+# Statistical summary of numerical columns
+df.describe()
+# Statistical summary of all column, including categorical
+df.describe(include = "all")
+df[['length', 'compression-ratio']].describe() #specific columns
+# Info about the index dtype and columns, non-null values, memory usage
+df.info()
 
-#
-# data cleaning: removing rows (0) with NaN values or columns (1) with NaN values
-df.dropna(subset=["price"], axis = 0, inplace = True)
+# DATA WRANGLING
 
-#missing values search/print
-'''
-miss_data = df.isnull() #returns boolean value for each cell, True for missing value 
-# df.notnull() #just example in case if needed
-for column in miss_data.columns.values.tolist():
-#    if miss_data[column].value_counts() < df.shape[0]: #not working yet, trying to print only columns with missing data
-        print (column)
-        print (miss_data[column].value_counts())
-        print ("")
-'''
+# Replace "?" with NaN and replace the old dataframe
+df.replace("?", np.nan, inplace = True)
+# Detecting missing data
+missing_data = df.isnull() # creates a boolean data frame with True for NAN
+missing_data.head(5)
+# Calculate the number of missing values in each column
+for column in missing_data.columns.values.tolist():
+    print(column)
+    print (missing_data[column].value_counts())
+    print("")
+# Replace "NaN" by mean value
+avg_norm_loss = df["losses"].astype("float").mean(axis=0)
+df["losses"].replace(np.nan, avg_norm_loss, inplace=True)
+# See which values are present in a particular column
+df['num-of-doors'].value_counts()
+# Calculate the most common type automatically
+df['num-of-doors'].value_counts().idxmax()
+# drop the rows with NaN in "price" column
+df.dropna(subset=["price"], axis=0, inplace=True)
+# reset index, because rows were droped
+df.reset_index(drop=True, inplace=True)
 
-#replacing NaN with MEAN value
-mean = df["normalized-losses"].astype("float").mean(axis=0)
-df["normalized-losses"].replace(np.nan, mean, inplace=True)
-#print ("norm_loss av. =", mean)
-mean = df["bore"].astype("float").mean(axis=0)
-df["bore"].replace(np.nan, mean, inplace=True)
-#print ("bore av. =", mean)
-mean = df["stroke"].astype("float").mean(axis=0)
-df["stroke"].replace(np.nan, mean, inplace=True)
-#print ("stroke av. =", mean)
-mean = df["horsepower"].astype("float").mean(axis=0)
-df["horsepower"].replace(np.nan, mean, inplace=True)
-#print ("horsepower av. =", mean)
-mean = df["peak-rpm"].astype("float").mean(axis=0)
-df["peak-rpm"].replace(np.nan, mean, inplace=True)
-#print ("peak-rpm av. =", mean)
+# Convert data types to proper format
+df[["bore", "stroke"]] = df[["bore", "stroke"]].astype("float")
+# Standardization - Transform mpg to L/100km
+df['city-L/100km'] = 235/df["city-mpg"]
+# Normalization, Simple feature scaling: x_new = x_old / x_max
+df['length'] = df['length']/df['length'].max()
+# Min-Max: x_new = (x_old - x_min)/(x_max - x_min)
+df['length'] = (df['length']-df['length'].min())/(df['length'].max()-df['length'].min())
+# Z-score: x_new = (x_old - mean(x))/sd(x)
+df['length'] = (df['length']-df['length'].mean())/df['length'].std()
 
-#replacing with the most frequent value
-df["num-of-doors"].replace(np.nan, df["num-of-doors"].value_counts().idxmax(), inplace=True)
-
-
-#
-#change type
-df["price"] = df["price"].astype("float")
-df["stroke"] = df["stroke"].astype("float")
-df["bore"] = df["bore"].astype("float")
-df["peak-rpm"] = df["peak-rpm"].astype("float")
-df["normalized-losses"] = df["normalized-losses"].astype("int") #only this column had wrong type, others were probably determined correctly by Python
-#df["price"] = df["width"].astype("object")
-
-#data standardization 
-df.rename(columns={"city-mpg":"city-L/100km"}, inplace=True)
-df["city-L/100km"]=235/df["city-L/100km"] #change values for the whole column
-df.rename(columns={"highway-mpg":"highway-L/100km"}, inplace=True)
-df["highway-L/100km"]=235/df["highway-L/100km"] #type changes automaticaly from int to float
-
-#data normalizing
-df["length"] = df["length"]/df["length"].max() #simple feature scaling method 
-df["width"] = df["width"]/df["width"].max() 
-df["height"] = df["height"]/df["height"].max() 
-#df["length"] = (df["length"]-df["length"].min())/(df["length"].max()-df["length"].min()) #min-max method
-#df["length"] = (df["length"]-df["length"].mean())/df["length"].std() #Z-score or Standard score
-
-#binning
-df["horsepower"] = df["horsepower"].astype(int, copy=True)
-bins = np.linspace(min(df["horsepower"]), max(df["horsepower"]), 4) 
+# Creating Bins - linspace(start_value, end_value, numbers_generated)
+bins = np.linspace(min(df["hp"]), max(df["hp"]), 4)
 group_names = ['Low', 'Medium', 'High']
-df['horsepower-binned'] = pd.cut(df['horsepower'], bins, labels=group_names, include_lowest=True )
-'''#%matplotlib inline
-pyplot.bar(group_names, df["horsepower-binned"].value_counts())
-plt.pyplot.xlabel("horsepower")
-plt.pyplot.ylabel("count")
-plt.pyplot.title("horsepower bins")'''
-
-#turning categorical var into quantitative var
-dummy_var = pd.get_dummies(df["fuel-type"]) #this line returns a dataframe 
+df['hp-binned'] = pd.cut(df['hp'], bins, labels=group_names, include_lowest=True )
+# Creating indicator variables (or dummy variables), a must for regression
+dummy_var = pd.get_dummies(df["fuel-type"])
+# Rename columns to meaningful ones
+dummy_var.rename(columns={'old_name':'new_name', 'old_name': 'new_name'}, inplace=True)
+# Merge data frame "df" and "dummy_var" 
 df = pd.concat([df, dummy_var], axis=1)
-df.drop("fuel-type", axis=1, inplace=True)
-#print(df[["diesel", "gas"]]) 
-
-
-#
-#correlation table where each column is compared with others 
-'''print(df[['bore', 'stroke', 'compression-ratio', 'horsepower']].corr())
-print(df[["engine-size", "price"]].corr())'''
-
-#scatterplot for continuous numerical variables 
-"""sns.regplot(x="engine-size", y="price", data=df)
-#plt.ylim(0,) #limits y axis values 
-#plt.xlim(50,)"""
-
-#boxplot for categorical variables 
-'''sns.boxplot(x="drive-wheels", y="price", data=df)'''
-
-#grouping
-df_group_one = df[['drive-wheels','body-style','price']] #allows operations on these columns as a group
-df_group_one = df_group_one.groupby(['drive-wheels', 'body-style'], as_index=False).mean() #creates a table with average price for the selected columns' unique values
-#print (df_group_one)
-#pivot 
-grouped_pivot = df_group_one.pivot(index='drive-wheels', columns='body-style') #creates a real pivot table, index is lines, values are mean of price
-grouped_pivot = grouped_pivot.fillna(0) #fill missing values with 0
-#print(grouped_pivot)
-#basic heatmap
-'''plt.pcolor(grouped_pivot, cmap='RdBu')
-plt.colorbar()
-plt.show()'''
-#detailed heatmap
-'''fig, ax = plt.subplots()
-im = ax.pcolor(grouped_pivot, cmap='RdBu')
-row_labels = grouped_pivot.columns.levels[1] #label names
-col_labels = grouped_pivot.index
-ax.set_xticks(np.arange(grouped_pivot.shape[1]) + 0.5, minor=False) #move ticks and labels to the center
-ax.set_yticks(np.arange(grouped_pivot.shape[0]) + 0.5, minor=False)
-ax.set_xticklabels(row_labels, minor=False) #insert labels
-ax.set_yticklabels(col_labels, minor=False)
-plt.xticks(rotation=90) #rotate label if too long 
-fig.colorbar(im)
-plt.show()'''
-
-
-#
-# screen outputs
-#print (df.head (15)) #prints first rows
-#print (df.tail(5)) #prints last rows
-#print (df.columns)
-
-# basic stats
-#print (df.dtypes)
-#print (df.info()) #another way to describe the columns
-#print (df.describe()) #by default skips rows and columns that don't contain numbers
-#print (df.describe(include="all")) #creates description for objects as well
-#print(df['drive-wheels'].unique()) #prints unique values in the column
-#print(df['drive-wheels'].value_counts()) #just counts
-#print(df['drive-wheels'].value_counts().to_frame()) #shows as a table 
-
-'''drive_wheels_counts = df['drive-wheels'].value_counts().to_frame() #creates new frame
-drive_wheels_counts.rename(columns={'drive-wheels': 'value_counts'}, inplace=True)
-drive_wheels_counts.index.name = 'drive-wheels' #changes the first column name in the new created table
-print(drive_wheels_counts)'''
-
-#df.to_excel("auto list db.xlsx") #saves to a sep. fill
+# Drop original column "fuel-type" from "df"
+df.drop("fuel-type", axis = 1, inplace=True)
