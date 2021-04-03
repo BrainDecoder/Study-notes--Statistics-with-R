@@ -70,3 +70,71 @@ dummy_var.rename(columns={'old_name':'new_name', 'old_name': 'new_name'}, inplac
 df = pd.concat([df, dummy_var], axis=1)
 # Drop original column "fuel-type" from "df"
 df.drop("fuel-type", axis = 1, inplace=True)
+
+#EXPLORATORY DATA ANALYSIS
+
+# Calculate the correlation between variables of type "int64" or "float64"
+df.corr()
+df[['bore', 'stroke', 'ratio', 'hp']].corr()
+# Understanding the (linear) relationship
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.regplot(x="engine-size", y="price", data=df)
+plt.ylim(0,)
+# Understanding categorical variables 
+sns.boxplot(x="body-style", y="price", data=df)
+
+# Descriptive Statistical Analysis
+df.describe()
+df.describe(include=['object']) #for categorical data
+df['drive-wheels'].value_counts()
+drive_wheels_counts = df['drive-wheels'].value_counts().to_frame() #nicely represents as a table
+drive_wheels_counts.rename(columns={'drive-wheels': 'value_counts'}, inplace=True)
+drive_wheels_counts.index.name = 'drive-wheels' #makes the table readable
+
+# Grouping
+df['drive-wheels'].unique() #shows unique values
+df_group_one = df[['drive-wheels','price']]
+df_group_one = df_group_one.groupby(['drive-wheels'],as_index=False).mean()
+# Group with multiple variables
+df_group_two = df[['drive-wheels','body-style','price']]
+grouped_test1 = df_group_two.groupby(['drive-wheels','body-style'],as_index=False).mean()
+# Make easier to visualize by creating a pivot table
+grouped_pivot = grouped_test1.pivot(index='drive-wheels',columns='body-style')
+grouped_pivot = grouped_pivot.fillna(0) #fill missing values with 0
+
+# Use a heat map to visualize the relationship
+plt.pcolor(grouped_pivot, cmap='RdBu')
+plt.colorbar()
+plt.show()
+# Making the viz beautiful:
+fig, ax = plt.subplots()
+im = ax.pcolor(grouped_pivot, cmap='RdBu')
+#label names
+row_labels = grouped_pivot.columns.levels[1]
+col_labels = grouped_pivot.index
+#move ticks and labels to the center
+ax.set_xticks(np.arange(grouped_pivot.shape[1]) + 0.5, minor=False)
+ax.set_yticks(np.arange(grouped_pivot.shape[0]) + 0.5, minor=False)
+#insert labels
+ax.set_xticklabels(row_labels, minor=False)
+ax.set_yticklabels(col_labels, minor=False)
+#rotate label if too long
+plt.xticks(rotation=90)
+fig.colorbar(im)
+plt.show()
+
+# Correlation and Causation
+from scipy import stats
+pearson_coef, p_value = stats.pearsonr(df['wheel-base'], df['price'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)  
+
+# ANOVA: Analysis of Variance or difference between groups of the same variable
+grouped_test2=df_group_two[['drive-wheels', 'price']].groupby(['drive-wheels'])
+# Obtain the values of the method group
+grouped_test2.get_group('4wd')['price']
+# 'f_oneway' in the module 'stats' obtains the F-test score and P-value
+f_val, p_val = stats.f_oneway(grouped_test2.get_group('fwd')['price'], grouped_test2.get_group('rwd')['price'], grouped_test2.get_group('4wd')['price'])  
+print( "ANOVA results: F=", f_val, ", P =", p_val)
+# High F and low P-value doesn't mean all three tested groups are correlated between them
+# Separate, similar comparison between 2 is needed for all variables
