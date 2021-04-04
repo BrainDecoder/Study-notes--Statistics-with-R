@@ -42,7 +42,8 @@ mpl.style.use(['ggplot']) # optional: for ggplot-like style
 # Extract the required data series 
 haiti = df_can.loc['Haiti', years]
 haiti.plot() #automatic plot
-# Custom plot
+
+# Line Plot
 haiti.index = haiti.index.map(int) #change index values to type integer for plotting
 haiti.plot(kind='line')
 plt.title('Immigration from Haiti')
@@ -73,3 +74,81 @@ plt.show()
 # `pie` for pie plots
 # `scatter` for scatter plots
 # `hexbin` for hexbin plot
+
+# COLORS
+import matplotlib
+for name, hex in matplotlib.colors.cnames.items():
+    print(name, hex)
+
+# Area Plot
+# Separate the top 5 countries
+df_can.sort_values(['Total'], ascending=False, axis=0, inplace=True) #sort desc.
+df_top5 = df_can.head() # get the top 5 entries
+df_top5 = df_top5[years].transpose() # transpose the dataframe
+df_top5.head() #show result
+# Draw area plot
+df_top5.index = df_top5.index.map(int) # change index values to integer
+df_top5.plot(kind='area', #type of plot
+             alpha=0.25, #transparancy, 0-1 values, default a=0.5
+             stacked=False, #True by default for area plots = all NaN will be made 0
+             figsize=(20, 10), # pass a tuple (x, y) size
+            )
+plt.title('Immigration Trend of Top 5 Countries')
+plt.ylabel('Number of Immigrants')
+plt.xlabel('Years')
+plt.show()
+
+# Histograms
+count, bin_edges = np.histogram(df_can['2013']) # returns 2 values
+print(count) # frequency count
+print(bin_edges) # bin ranges, default = 10 bins
+df_can['2013'].plot(kind='hist', figsize=(8, 5), xticks=bin_edges) # same as df_can['2013'].plot.hist()
+plt.title('Histogram of Immigration from 195 Countries in 2013')
+plt.ylabel('Number of Countries') # add y-label
+plt.xlabel('Number of Immigrants') # add x-label
+plt.show()
+# Multiple histogram
+df_can.loc[['Denmark', '...', 'Sweden'], years].plot.hist() # generate histogram
+df_t = df_can.loc[['Denmark', '...', 'Sweden'], years].transpose() #if previous gives wrong graph
+count, bin_edges = np.histogram(df_t, 15) # get the x-tick values
+xmin = bin_edges[0] - 10 #adding buffer of 10 to the first bin for aesthetic purposes 
+xmax = bin_edges[-1] + 10 # same for the last bin value
+df_t.plot(kind ='hist', 
+          figsize=(10, 6),
+          bins=15, #increase the bin size
+          alpha=0.6, #set transparency to 60%
+          xticks=bin_edges,
+          color=['coral', 'darkslateblue', 'mediumseagreen'],
+          stacked = True, #if plots should not overlap each other
+          xlim=(xmin, xmax)
+         )
+plt.title('Histogram of Immigration from Denmark, Norway, and Sweden from 1980 - 2013')
+plt.ylabel('Number of Years')
+plt.xlabel('Number of Immigrants')
+plt.show()
+
+# Bar Charts
+df_iceland = df_can.loc['Iceland', years] #get the data
+df_iceland.plot(kind='bar', figsize=(10, 6), color='steelblue', rot=90) #barh for horizontal bars, ?rot rotates bars by 90 degrees?
+plt.xlabel('Year') # add to x-label to the plot
+plt.ylabel('Number of immigrants') # add y-label to the plot
+plt.title('Icelandic immigrants to Canada from 1980 to 2013') # add title to the plot
+plt.annotate(        #annotate arrow 
+    '',              #string, blank here
+    xy=(32, 70),     #head of the arrow at point (year 2012 , pop 70)
+    xytext=(28, 20), #base of the arrow at point (year 2008 , pop 20)
+    xycoords='data', #will use the coordinate system of the object being annotated 
+    arrowprops=dict(arrowstyle='->', connectionstyle='arc3', color='blue', lw=2)
+    #-> = standard style, arc3 = straight line, lw = line width
+    )
+plt.annotate(        #annotate Text
+    '2008 - 2011 Financial Crisis', # text to display
+    xy=(28, 30),     # start the text at at point (year 2008 , pop 30)
+    rotation=72.5,   # based on trial and error to match the arrow
+    va='bottom',     # want the text to be vertically 'bottom' aligned
+    ha='left')       # want the text to be horizontally 'left' algned
+for index, value in enumerate(df_can): # annotate value labels to each country
+    label = format(int(value), ',') # format int with commas
+    # place text at the end of bar (subtracting 47000 from x, and 0.1 from y to make it fit within the bar)
+    plt.annotate(label, xy=(value - 47000, index - 0.10), color='white')
+plt.show()
