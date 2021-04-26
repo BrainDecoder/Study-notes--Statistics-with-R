@@ -62,3 +62,39 @@ PROBABILITY / RANDOM VARIABLES
 > z-score = (original value - E(X))/sd(X)
 > for Normal approximation W/O continuity of Binomial use E(X) and sd(X) from Binomial in the Normal formulas
 > for Normal approximation with continuity add 0.5 to the point/points
+
+
+SAMPLING DISTRIBUTION
+
+// probability (mean of abs) of the sample average (X.bar) falling within 1 unit (<=1) of the population mean
+> mean (abs(X.bar - mean(pop.1$height)) <= 1)
+
+// Simulation: expectation of the sampling distribution for the sample average of the variable
+> X.bar <- rep (0, 10^5) // future sequence/statistic with 0 values to be replaced
+> for (i in 1:10^5) {  //same size as X.bar
++     X.samp <- sample(pop.2$bmi,150)  //extracts random samples from population or creates them with r...() formulas
++     X.bar[i] <- mean(X.samp)  //a statistic formula (T=X_bar/S/sqrt(n) for example) executed on the random sample and assigned to a cell
++ }
+> mean(X.bar) - is the E(Xbar)
+> sd(X.bar)
+
+// central region that contains 80%
+> quantile(X.bar, c(0.1, 0.9)), where X.bar can be any T statistic formula calculated in the simulation
+
+// normal approximation of the central region that contains 80% of the sampling distribution of the sample average 
+> qnorm(c(0.1,0.9), E(Xbar), sd(Xbar))
+// the 90th percentile for the average score
+> qnorm(0.9, E(Xbar), sd(Xbar))
+// The 90th percentile for the total score for the XX observations
+> XX*qnorm(0.9, E(Xbar), sd(Xbar))
+// The probability that the total of the XX observations is less than 200 (for example)
+> pnorm (200/XX, E(X), sd(X))
+
+//structure of the central region of 90% of the normal distribution
+> E(X) +/- qnorm(0.95) * sd(Xbar) => c = qnorm(0.95)*sd(Xbar)	
+
+/// CLT
+> E(Xbar) = E(X) - the expectation of the sample mean is equal to the theoretical expectation of its components 
+> Var(Xbar) = Var(X)/n - the variance of the sample average, n is size of the sample 
+> sd(Xbar) = sqrt(Var(Xbar)) = sd(X)/sqrt(n)
+> Z = (Xbar - E(Xbar)) / sqrt(Var(Xbar)) = (sqrt(n)(Xbar - E(X))) / sqrt(Var(X)) - the standardized sample average
