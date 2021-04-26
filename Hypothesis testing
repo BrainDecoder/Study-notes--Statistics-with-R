@@ -1,0 +1,49 @@
+HYPOTHESIS testing
+
+E(X) - parameter of interest 
+H0 : E(X) = 13662 - null hypothesis, when the phenomena (of difference between prices) is absent, E(X) = 13662
+H1 : E(X) != 13662 - alternative hypothesis, when the phenomena is present, E(X) != 13662
+H1:E(X)!=13662 = two sided alternative
+H1:E(X)>13662 or H1:E(X)<13662 = one sided alternative 
+Test statistic = (x_bar-E(X))/(S/sqrt(n)), where x_bar is sample average, E(X) is the hypothesis average, S is sample sd
+
+Testing hypothesis on the expectation
+{|T|>c} = rejection region for two sided, where c is the threshold usually equal to qt(0.975, n-1) which produces a test with a 5% significance level, T is statistic calculated as t-distribution 
+{T>c} = rejection region for one sided alternative, where c is qt(0.95, n-1), 5% significance level
+p-value = P(|T|>|t|), where t is the observed value of the T statistic (for 2-sided), or T-DISTRIBUTION, or test statistic 
+p-value for 2-sided = 2*(1-pt(|t|, n-1)), where t is t-distribution
+p-value for 1-sided = 1-pt(t, n-1), where t is t-distribution
+t.test(cars$price, mu=13662) = mu is the expected value we want to test, for 2-sided alternative
+t.test(cars$price, mu=13662, alternative="greater") = for one sided alternative
+
+Testing hypothesis on proportion
+H0 : p = 0.5, true when 0 is the center of the sampling distribution of the test statistic Z
+H1 : p != 0.5
+Z = (p_hat - p) / sqrt(p(1-p)/n)
+{|Z| > c} = {Z^2 > c^2} = rejection region
+prop.test(nr. or occurrences, n, p = 0.25) = produces statistical tests for proportions; CI for probability where n is sample size, nr. is failed examples, p is H0 probability of the event 
+
+Calculating significance level
+1. simulation based on specific model 
+2. T <- (X.bar - 5)/(S/sqrt( n )), where T is the test statistic, the whole formula is determined by situation/task, X.bar is the sample mean calculated inside the simulation, S is the sd calculated inside the simulation, n is sample size
+3. mean(T > qt(0.95, n-1)), where (>...) is the threshold that determines the rejection region 
+
+Extracting categories from datasets
+> w <- c(5,3,4,6,2,9)
+> d <- c(13,22,0,12,6,20)
+> w > 5
+[1] FALSE FALSE FALSE TRUE FALSE TRUE
+> d[w > 5] = extracts from d values on the same positions as in w that meet in w the w>5 condition
+[1] 12 20
+
+The Permutation Test
+> x <- unpaired$extra
+# t is test statistic
+> t <- abs(mean(x[1:10])-mean(x[11:20]))
+> T <- rep(0,10^5)
+> for (i in 1:10^5) {
++     X <- sample(x)
++     T[i] <- abs(mean(X[1:10])-mean(X[11:20]))
++ }
+# p-value is calculated using the P(|T|>|t|) formula
+> mean (T > t) 
