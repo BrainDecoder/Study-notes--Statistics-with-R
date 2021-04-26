@@ -1,0 +1,50 @@
+COMPARING 2 SAMPLES
+
+In statistics, the Explanatory variable (like x in math) has effect on the distribution of values of second variable, called the Response (f(x) in math). 
+> plot(dif.mpg~heavy) = plot(response~explanatory.variable) = creates 2 box plots, for TRUE and FALSE values from heavy, on the dif.mpg scale
+> t.test(dif.mpg~heavy) = finds the significance difference between the 2 groups from Heavy in the expectation of the dif.mpg score
+
+Comparing sample variances
+> qf(0.025, dfa, dfb), where 0.025 is the percentile, dfa and dfb are degrees of freedom
+> qf(c(0.05,0.95), dfa, dfb), calc. the region that contains 90% of the distribution of the statistic
+> (s.a^2/s.b^2)/qf(0.975,n.a-1,n.b-1) = calculates the lower limit of the confidence interval with a 95% confidence level 
+> var.test(dif.mpg~heavy) = finds the significance difference between the 2 groups from Heavy in the variance of the dif.mpg score
+
+Formulas:
+> t <- abs(x.bar.a-x.bar.b)/sqrt(s.a^2/n.a + s.b^2/n.b) = calculates the absolute value of the test statistic for 2 samples
+> 2*(1-pnorm(t)) = calculates p-value, t is from formula above
+
+Actual CL of the CI:
+1. Simulation where for both sub-populations the sample sd is calculated 
+2. F <- S.a^2/S.b^2 = the distribution of the ration of estimators of the variance 
+3. mean((F/qf(0.025,n.a-1,n.b-1) >= 4)&(F/qf(0.975,n.a-1,n.b-1) <= 4)), where 4 is the actual value of the estimated parameter
+
+
+LINEAR REGRESSION
+
+> plot(y~x, data=file.name) = builds a scater plot with x and y axes, where y=f(x)
+> abline (a, b, col="green") = adds to the plot a green line with a intercept and b slope (y=a+b*x)
+> cov(x,y) = sum((y-mean(y))*(x-mean(x)))/(n-1) = computes the covariance
+> b <- cov(x,y)/var(x) = computes the slope
+> a <- mean(y) - b*mean(x) = computes the intercept 
+
+* a+b*x = y, where y is the expected value on the regression line = the estimated expectation of the response
+* residual = y - (a+b*x), where y is the observed response, x is the observed explanatory 
+
+> abline(lm(y~x)) = draws the regression line on the plot 
+> summary((y~x)) = computes in a table the estimated value, estimated sd, test statistic, and p-value for the intercept (row 1) and slope (row 2)
+> confint (lm(y~x)) = computes CI for the intercept and slope based on t-distribution (for Normal aproximation see pag. 260 top)
+> residuals(lm(y~x)) = calculates the residuals
+> sqrt(sum(risiduals(lm(y~x))^2)/n-2) = the sd of the response from the regression model 
+
+> 1-var(residuals(lm(y~x)))/var(y) = computes un-adjusted R-squared/Multiple R-squared = the part of the variance of response explained by the explanatory variable 
+> 1-(sum(residuals(lm(y~x))^2)/n-2/var(y) = computes adjusted R-squared, becomes very close to un-adjusted for large nr or observations 
+
+
+Bernoulli Response 
+
+> plot(num.of.doors ~ fuel.type,data=cars) = creates a mosaic plot (response~explanatory)
+> summary(glm(cars$num.of.doors=="four"~cars$length, family=binomial)) = tests the hypothesis for logic regression; tests the hypothesis that the indicator of type (the response, four in this case) and an explanatory variable are unrelated  
+> confint(glm(...)) = computes the confidence intervals 
+> confint(glm(..., subset=(type!="u"))) = excludes type u from the calculations
+> prop.test(table(cars$fuel.type, cars$num.of.doors)) = calculates the proportions for 2 fuel.types (explanatory) vs. 2 doors type-cars (response); tests the null hypothesis that the probabilities of 2 subcategories are equal; calculates the CI for the difference in probabilities; the estimate of the subcategories probabilities.
