@@ -1,0 +1,73 @@
+LINEAR REAGRESSION
+
+General
+> library (MASS) - useful libraries
+> install.packages("ISLR") - instalation if required
+> library (ISLR)
+> attach (aTable) - all following variables will be taken from aTable table
+> library (car) - for the VIF function
+> functionName = function() {
+command 1
+command 2
+print ("Something to print")
+} - creates a custom function that can be used later
+
+Simple LR
+> x=lm(col1~col2) - fits a simple LR with col1 as Y and col2 as X
+> names(x) - also shows hidden pieces of info in x=lm()
+> x$hiddenPiece - to see details of the hidden piece 
+> confint(x) - calc confidence intervals
+> predict(x, data.frame(col2=(c(X1, X2, X3))), interval="confidence") - predicts Ys results for Xs inputs and their confidence intervals (related to reducible error). col2 is the real name of the column or vector used as X value to calculate Y value! The interval is based on the avg of all results and is for the predicted Y. 
+> ---,interval="prediction") - --- and their prediction intervals (related to irreducible error), usually larger because incorporates the reducible error as well. The interval is based on the specific X and is for the real Y. 
+> which.max(x) - identifies the index of the largest element of a vector 
+
+Viz
+> plot(colForXaxis, colForYaxis) - draws a plot
+> plot(colForYaxis~colForXaxis) - same plot
+> ---, pch="+") - uses + to draw the points on the plot, any simbol can be used, as well as its number.
+> abline(x, lwd=3, col="red") - adds the LR line to the plot with width of 3 and red color. abline can be used for any line by mentioning abline(intercept,slope)
+> par(mfrow=c(2,2)) - divides the plot screen into 4 parts
+> plot(m(col1~col2)) - builds 4 diagnostic plots (all 4 on one screen if used after par)
+> plot(predict (x), residuals (x)) - builds a risidual plot that proves non-linearity
+> plot(predict (x), rstudent (x)) - builds a standardized risidual plot. Can be used also to plot risiduals agains fitted values (when multiple LR)
+> plot(hatvalues (x)) - hatvalues computes leverage statistics for any number of predictors 
+
+Multiple LR
+> x=lm(Y~X1+X2+X3)- for 3 predictors
+> x=lm(Y~.) - for all predictors
+> x=lm(Y~.-X5) - for all predictors except X5 
+> summary(x)$r.sq - from the summary results gives specifically the R-squared one
+> summary(x)$sigma - from the summary results gives specifically the RSE one
+> vif(x) - computes variance inflation factors
+> lm(Y~X1+X2+X1:X2) - adding an interaction term between 2  columns; col*col2 replaces col1 + col2 + col1:col2
+> xx=lm(Y~X+I(X^2)) - non-linear predictor X 
+> anova (x, xx) - anova compares the 2 models, null hypothesis is that the models fit the data equally, p-value close to 0 -> sets differ
+
+Qualitative predictors
+> contrasts(col1) - returns the coding that R uses for the dummy variables of the qualitative predictor
+
+
+LOGISIC REGRESSION
+
+> cor(dataset) = computes the correlation of x and y if these are vectors. If x and y are matrices then the correlation s between the columns of x and the columns of y are computed.
+> glm.fit = glm (y ∼ col1 + col2, data=dataFrameName, family=binomial) - binomial tells R that it's a logistic regression. summary should be used afterwards to see the results. 
+> glm.probs = predict (glm.fit, type = "response") - type="response" tells R to output probabilities of the form P(Y = 1|X)
+> glm.probs[1:10] - runs predict for 10 predictors mentioned
+> glm.pred= rep("Down", 1250) - creates a vector of 1250 Down elements
+> glm.pred [glm.probs>.5]="Up" - creates a condition for the prediction, which Down elements to be replaced with Up
+> table(glm.pred, Y) - Y is result or predicted, determines how many observations were correctly classified 
+> mean(glm.pred == Y) - computes the fraction of correct predictions
+
+LDA - linear discriminant analysis
+
+> lda.fit = lda (Y ∼ col1+col2, data = dataset, subset = trainDataSet) - no family option for lda. 
+> lda.pred = predict (lda.fit, testDataSet) - returns 3 elements: class (contains LDA’s predictions), posterior (a matrix whose kth column contains the posterior probability that the corresponding observation belongs to the kth class), x (contains the linear discriminants).
+> lda.class = lda.pred$class
+> table (lda.class, testDataSet) - table of correct and wrong predictions 
+> mean (lda.class == testDataSet) - % of correct predictions
+> sum(lda.pred$posterior[,1] >=.5) - applying a 50% threshold to the posterior probabilities allows us to recreate the predictions contained in lda.pred$class
+> sum(lda.pred$posterior[,1]<.5)
+
+QDA - quadratic discriminant analysis
+> qda.fit = qda (Y ∼ col1+col2, data=dataFrame, subset = trainDataSet) - doesn't output the coefficients
+> predict() - same as LDA
