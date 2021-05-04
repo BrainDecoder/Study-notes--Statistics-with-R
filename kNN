@@ -1,0 +1,43 @@
+kNN - k NEAREST NEIGHBOUR
+
+General
+> str(dataFrame) - shows the columns names, data type, several first values
+> dataFrame.subset = dataFrame[c('col1', 'col2', 'col3')] - creates a subset with the selected columns/features/attributes
+> nrow(dataFrame)
+
+Normalization
+> normalize = function (x) {
++	return ((x - min(x)) / (max(x) - min(x)))
++	} - converts to 0 to 1 values
+> dataFrame.subset.n = as.data.frame(lapply(dataFrame.subset[,colFrom:colTo], normalize)) - lapply applies the function on the dataset, but since it returns lists, it is converted back to data.frame later
+
+Training/Test sets
+> dat.d = sample(1:nrow(dataFrame.subset.n), size = nrow(dataFrame.subset.n) * 0.7, replace = FALSE) - random selection of 70% data
+> train.gc = dataFrame.subset[dat.d,] # 70% training data
+> test.gc = dataFrame.subset[-dat.d,] # remaining 30% test data
+> train.gc_labels = dataFrame.subset[dat.d,1] - creating seperate dataframes for target/result feature
+> test.gc_labels = dataFrame.subset[-dat.d,1]
+
+Training a model
+> library(class) - calls class package required for kNN
+> knn.26 = knn(train = train.gc, test = test.gc, cl = train.gc_labels, k=26) - training with k=26
+
+Testing accuracy v1
+> acc.26 = 100*sum(test.gc_labels == knn.26)/NROW(test.gc_labels) - testing accuracy for k=26
+> table (knn.26 ,test.gc_labels) - checks prediction against actual value in tabular form; intersection of similar values shows the nr of correct predictions
+
+Testing accuracy v2
+> Install.packages(caret) - if required
+> library(caret)
+> confusionMatrix(knn.26 ,test.gc_labels) - gives lots of info about the results, like accuracy, conf. interval, p-value, etc
+
+Improvement of the model
+> i=1 #declaration to initiate for loop
+> k.optm=1 #declaration to initiate for loop
+> for (i in 1:28){ 
++    knn.mod <- knn(train=train.gc, test=test.gc, cl=train.gc_labels, k=i)
++    k.optm[i] <- 100 * sum(test.gc_labels == knn.mod)/NROW(test.gc_labels)
++    k=i  
++    cat(k,'=',k.optm[i],'\n') #to print % accuracy 
++} - runs a loop of trainings and testings
+> plot (k.optm, type="b", xlab="K-Value", ylab="Accuracy level") - to plot % accuracy wrt to k-value
