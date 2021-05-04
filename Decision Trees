@@ -1,0 +1,94 @@
+DECISION TREES
+
+Classification Trees
+
+General 
+> install.packages("tree") - if needed
+> library (tree) - call the package
+> varName = factor(ifelse(condition, if true, if false)) - factor keeps the responses as 2 separate categories, which is needed for the tree 
+> newDataFrame = data.frame (oldDataFrame, column) - adds column to the oldDataFrame
+> dataFrame <- subset (dataFrame, select = -c(col1, col2)) - removes col1 and col2 from the dataFrame
+
+Fitting classification tree
+> tree.dataFrame = tree(Y∼columns, dataFrame) - similar to lm() function, then summary should be applied to see results
+> plot(tree.dataFrame)
+> text(tree.dataFrame, pretty=0) - adds text to the tree picture
+> tree.dataFrame - prints details of each branch of the tree
+
+Testing accuracy
+> set.seed(nr)
+> train = sample(1:nrow(dataFrame), 200)
+> dataFrame.test = dataFrame[-train,]
+> response.test = response [-train]
+> tree.dataFrame = tree (response∼.-Sales, dataFrame, subset = train)
+> tree.pred = predict (tree.dataFrame, dataFrame.test, type = "class") - class argument instructs R to return the actual class prediction 
+> table (tree.pred, response.test)
+
+Improving results
+> set.seed (nr)
+> cv.dataFrame = cv.tree(tree.dataFrame, FUN=prune.misclass) - cv.tree() performs cross-validation in order to determine the optimal level of tree complexity; FUN=prune.misclass indicates that we want the classification error rate to guide the cross-validation and pruning process, rather than the default for the cv.tree() function, which is deviance
+> names(cv.dataFrame)
+> cv.dataFrame
+
+Ploting error rate
+> par(mfrow = c(1,2))
+> plot(cv.dataFrame$size, cv.dataFrame$dev, type="b")
+> plot(cv.dataFrame$k, cv.dataFrame$dev, type="b")
+> prune.dataFrame = prune.misclass (tree.dataFrame, best=9) - prune the tree to obtain the 9 node tree, which was identified in cv.dataFrame as the $size with lowest $dev
+> plot(prune.dataFrame)
+> text(prune.dataFrame, pretty=0)
+
+Testing pruned tree
+> tree.pred = predict(prune.dataFrame, dataFrame.test, type="class")
+> table(tree.pred, response.test)
+
+Regression Trees
+
+> set.seed (nr) - Fitting Regression tree
+> train = sample (1:nrow(dataSet), nrow(dataSet)/2)
+> tree.dataSet = tree(Y∼.,dataSet, subset=train)
+> summary (tree.dataSet)
+> plot(tree.dataSet)
+> text(tree.dataSet ,pretty=0)
+
+> cv.dataSet =cv.tree(tree.dataSet) - improving results 
+> plot(cv.dataSet$size, cv.dataSet$dev, type=’b’)
+
+> prune.dataSet = prune.tree (tree.dataSet, best=5) - pruning 
+> plot(prune.dataSet)
+> text(prune.dataSet, pretty=0)
+
+> yhat = predict (tree.dataSet, newdata = dataSet[-train,]) - testing and predicting
+> dataSet.test = dataSet [-train,"medv"]
+> plot (yhat, dataSet.test)
+> abline (0,1)
+> mean ((yhat-dataSet.test)^2)- MSE associated with the bagged regression tree
+
+Bagging and Random Forests
+
+> library (randomForest)
+> set.seed (nr)
+> bag.dataSet = randomForest (Y∼.,data=dataSet, subset=train, mtry=13, importance=TRUE) - mtry indicates how many predictors should be used - in this case 13 is max > we do bagging, if mtry is smaller > we grow random forest; ntree= changes the number of trees grown by randomForest(); 
+> bag.dataSet
+
+> yhat.bag = predict (bag.dataSet, newdata=dataSet[-train,]) - testing the bagged model
+> plot(yhat.bag, dataSet.test)
+> abline (0,1)
+> mean((yhat.bag-dataSet.test)^2) - MSE associated with the bagged regression tree
+> importance (rf.dataSet) - shows the importance of each variable for a Random Forest model
+> varImpPlot (rf.dataSet) - plots the importance results 
+
+Boosting
+
+> library (gbm)
+> set.seed (nr)
+> boost.dataSet = gbm(Y∼., data=dataSet[train,], distribution="gaussian", n.trees=5000, interaction.depth=44, shrinkage=0.2, verbose=F) - gaussian for regression problems, bernoulli for classification problems, 5000 for 5000 trees, 4 is the depth of each tree; shrinkage and verbose are used if shrinkage parameter is customized, by default it's 0.001. 
+> summary (boost.dataSet) - produces a relative influence plot 
+
+Partial dependence plots
+> par(mfrow = c(1,2))
+> plot(boost.dataSet, i="rm") - rm and lstat are the most important variables
+> plot(boost.dataSet, i="lstat") - these illustrate the marginal effect of the selected variables on the response after integrating out the other variables
+
+> yhat.boost = predict (boost.dataSet, newdata=dataSet[-train,], n.trees=5000)
+> mean((yhat.boost-dataSet.test)^2) - lower the MSE eman is - the better
