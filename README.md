@@ -1,2 +1,2 @@
 # learning-notes
-Useful commands, scripts, and formulas collected during the learning process. 
+Useful R commands, scripts, and formulas collected during the Bachelor labs. 
